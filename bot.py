@@ -85,6 +85,7 @@ def run(reddit, reply, cache, sub='test'):
     """
     subreddit = reddit.subreddit(sub)
     comments = subreddit.comments(limit=25)
+    
     print('Searching for comments...')
     
     for comment in comments:
@@ -94,8 +95,10 @@ def run(reddit, reply, cache, sub='test'):
             print('Comment found!')
             # comment.reply(reply)
             print('Replied!')
-            cache = cache.append(pd.Series([comment.id]), ignore_index=True)
-            print('comment.id added to cache')
+            cache = cache.append(pd.Series([comment.id], dtype=str),
+                                   ignore_index=True)      
+
+            print('{} added to cache'.format(comment.id))
         else:
             print('Skip')
             
