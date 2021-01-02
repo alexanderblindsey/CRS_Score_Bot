@@ -32,6 +32,7 @@ def get_response(url):
     print('Connecting...')
     response = requests.get(url).text
     print('Retrieved')
+    
     return response
 
 
@@ -67,6 +68,7 @@ def scrape(response):
                                                                  num_inv,
                                                                  draw_date,
                                                                  score))
+    
     accessed = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
     last_draw = pd.Series({'variable':'value',
                            'accessed':accessed,
