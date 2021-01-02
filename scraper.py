@@ -7,13 +7,19 @@ Created on Sun Dec 27 17:49:02 2020
 Scrapes Immigration Canada website for details of last Express Entry draw.
 """
 
+##############################################################################
+# IMPORTS
+##############################################################################
 from bs4 import BeautifulSoup
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 import pandas as pd
 
 
+##############################################################################
+# GLOBALS
+##############################################################################
 URL = ('https://www.canada.ca/en/immigration-refugees-citizenship/services/im'
        'migrate-canada/express-entry/submit-profile/rounds-invitations.html')
 PATH = 'data/last_draw.csv'
@@ -27,16 +33,6 @@ def get_response(url):
     response = requests.get(url).text
     print('Retrieved')
     return response
-
-
-def main():
-    while True:
-        site_text = scrape(get_response(URL))
-        save_results(site_text)
-        
-        # sleep
-        print('Sleeping!\n\n')   
-        time.sleep(10)   
 
 
 def save_results(to_save, path=PATH):
@@ -71,16 +67,33 @@ def scrape(response):
                                                                  num_inv,
                                                                  draw_date,
                                                                  score))
-    accessed = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    accessed = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
     last_draw = pd.Series({'variable':'value',
                            'accessed':accessed,
                            'program':program,
                            'num_inv':num_inv,
                            'draw_date':draw_date,
                            'score':score})
+    print('Scraped at: {}'.format(accessed))
 
     return last_draw
 
 
+##############################################################################
+# MAIN
+##############################################################################
+def main():
+    while True:
+        site_text = scrape(get_response(URL))
+        save_results(site_text)
+        
+        # sleep
+        print('Sleeping!\n\n')   
+        time.sleep(10)   
+
+
+##############################################################################
+# RUNNER
+##############################################################################
 if __name__ == '__main__':
     main()
