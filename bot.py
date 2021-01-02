@@ -41,7 +41,6 @@ def authenticate():
                                 .now(timezone.utc)
                                 .strftime('%Y-%m-%d %H:%M:%S')))
     
-    
     return reddit
 
 
@@ -53,7 +52,7 @@ def get_cache(path_=PATH_CACHE):
     print('Searching for cache...')
     if os.path.exists(path_)==True:
         print('Cache exists')
-        cache = pd.read_csv(path_, squeeze=True) # returns Series
+        cache = pd.read_csv(path_, squeeze=True) 
         print('Cache with {} entries loaded'.format(len(cache)))
         
     else:
@@ -99,9 +98,9 @@ def run(reddit, reply, cache, sub='test'):
             # comment.reply(reply)
             print('Replied!')
             cache = cache.append(pd.Series([comment.id], dtype=str),
-                                   ignore_index=True)      
-
+                                 ignore_index=True)      
             print('{} added to cache'.format(comment.id))
+
         else:
             print('Skip')
             
@@ -118,7 +117,6 @@ def update_cache(cache, path_=PATH_CACHE):
     cache.to_csv(path_, index=False)
     print('Cache saved as csv')
 
-
 ##############################################################################
 # MAIN    
 ##############################################################################
@@ -127,6 +125,7 @@ def main():
         cache = get_cache()
         reddit = authenticate()
         to_reply = reply()
+        
         runner = run(reddit, to_reply, cache)
         update_cache(runner)
 
