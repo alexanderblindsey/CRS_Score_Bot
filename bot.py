@@ -83,7 +83,7 @@ def reply(path_=PATH_DRAW):
     return msg
 
 
-def run(reddit, reply, cache, sub='test'):
+def run(reddit, reply, cache, sub='ImmigrationCanada'):
     """
     Posts on the specified subreddit if a comment containing a keyword 
     is found. Updates cache in memory.
@@ -98,7 +98,7 @@ def run(reddit, reply, cache, sub='test'):
         isMatch = any(string in comment_text for string in MATCH_WORDS)
         if isMatch and comment.id not in cache.values:
             print('Comment found!')
-            comment.reply(reply)
+            # comment.reply(reply)
             print('Replied!')
             cache = cache.append(pd.Series([comment.id], dtype=str),
                                  ignore_index=True)      
