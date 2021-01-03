@@ -98,7 +98,7 @@ def run(reddit, reply, cache, sub='ImmigrationCanada'):
         isMatch = any(string in comment_text for string in MATCH_WORDS)
         if isMatch and comment.id not in cache.values:
             print('Comment found!')
-            # comment.reply(reply)
+            comment.reply(reply)
             print('Replied!')
             cache = cache.append(pd.Series([comment.id], dtype=str),
                                  ignore_index=True)      
