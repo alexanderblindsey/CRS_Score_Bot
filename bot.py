@@ -3,6 +3,9 @@
 Created on Sun Dec 27 22:26:13 2020
 
 @author: alindsey
+
+Posts data on most recent Express Entry (from scraper.py) draw to 
+r/Immigration Canada.
 """
 
 ##############################################################################
