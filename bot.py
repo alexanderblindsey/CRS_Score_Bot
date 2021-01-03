@@ -83,7 +83,7 @@ def reply(path_=PATH_DRAW):
     return msg
 
 
-def run(reddit, reply, cache, sub='ImmigrationCanada'):
+def run(reddit, reply, cache, sub='test'):
     """
     Posts on the specified subreddit if a comment containing a keyword 
     is found. Updates cache in memory.
