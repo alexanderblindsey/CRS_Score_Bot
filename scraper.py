@@ -25,9 +25,12 @@ URL = ('https://www.canada.ca/en/immigration-refugees-citizenship/services/im'
 PATH = 'data/last_draw.csv'
 
 
+##############################################################################
+# FUNCTIONS
+##############################################################################
 def get_response(url):
     """
-    Connects to url.
+    Retrieves text from URL as html.
     """         
     print('Connecting...')
     response = requests.get(url).text
@@ -47,7 +50,7 @@ def save_results(to_save, path=PATH):
 
 def scrape(response):
     """
-    Scrapes Immigration Canada website and finds relevant data.
+    Scrapes text and finds relevant data.
     """
     print('Parsing...')
     class_ = 'mwsgeneric-base-html parbase section'
@@ -61,7 +64,7 @@ def scrape(response):
     
     program = paras[1].text
     num_inv = paras[3].text.split(':')[1].split('a')[0].split('F')[0].lstrip()
-    draw_date = paras[5].text.split(':')[1].split('at')[0].lstrip().rstrip()
+    draw_date = paras[5].text.split(':')[1].split('at')[0].strip()
     score = paras[6].text.split(':')[1].lstrip()
     
     print('Program: {}\nnum_inv: {}\ndate: {}\nscore: {}'.format(program,
