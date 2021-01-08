@@ -31,9 +31,9 @@ class Draw:
     
     numDraws = 0
     
-    def __init__(self, program, numInv, date, score):
+    def __init__(self, program, num_inv, date, score):
         self.program = program
-        self.numInv = numInv
+        self.num_inv = num_inv
         self.date = date
         self.score = score
         
@@ -43,7 +43,7 @@ class Draw:
 ##############################################################################
 # FUNCTIONS
 ##############################################################################
-def getResponse(url):
+def get_response(url):
     """
     Retrieves text from URL as html.
     """         
@@ -54,25 +54,42 @@ def getResponse(url):
     return response
 
 
-def tableScraper(response):
+def table_scraper(response):
     """
-    Gets table and adds each row as a class.
+    Gets table and adds each row.
     """
     print('Parsing...')
     soup = BeautifulSoup(response, 'lxml')
     
     print('Found table')
-    htmlTable = soup.find('table')
-    tableRows = htmlTable.find_all('tr')
-    for i, row in enumerate(tableRows):
-        print(i, row.text)
+    html_table = soup.find('table')
+    table_rows = html_table.find_all('tr')
+    
+    
+    # for i, row in enumerate(tableRows):
+    #     for entry in row:
+    #         try:
+    #             print(i, entry.text)
+                
+                    
+                
+    #         except AttributeError:
+    #             continue
+
+    for i, row in enumerate(table_rows):
+        table_entries = row.find_all('td')
+        for i_, entry in enumerate(table_entries):
+            print(i, i_, entry.text)
+    
+        if i == 20:
+            break
+        
+        
 
 
 
-
-
-response = getResponse(URL)
-table = tableScraper(response)
+response = get_response(URL)
+table = table_scraper(response)
     
 ##############################################################################
 # MAIN
