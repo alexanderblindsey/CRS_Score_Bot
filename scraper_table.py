@@ -66,16 +66,6 @@ def table_scraper(response):
     table_rows = html_table.find_all('tr')
     
     
-    # for i, row in enumerate(tableRows):
-    #     for entry in row:
-    #         try:
-    #             print(i, entry.text)
-                
-                    
-                
-    #         except AttributeError:
-    #             continue
-
     for i, row in enumerate(table_rows):
         table_entries = row.find_all('td')
         for i_, entry in enumerate(table_entries):

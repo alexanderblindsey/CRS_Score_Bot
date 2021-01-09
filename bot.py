@@ -34,11 +34,11 @@ def authenticate():
     Authenticates account using account information from config.py file.
     """
     print('Authenticating...')
-    reddit = praw.Reddit(username=config.username,
-                         password=config.password,
-                         client_id=config.client_id,
-                         client_secret=config.client_secret,
-                         user_agent="cunstitution's CRS score bot v0.1")
+    reddit = praw.Reddit(username=config.bot['username'],
+                         password=config.bot['password'],
+                         client_id=config.bot['client_id'],
+                         client_secret=config.bot['client_secret'],
+                         user_agent="cunstitution's CRS score bot v1.0")
     print('Authenticated as {}.\n'.format(reddit.user.me()) + 
           'Accessed: {}'.format(datetime
                                 .now(timezone.utc)
