@@ -13,6 +13,7 @@ For SQLite db.
 from bs4 import BeautifulSoup
 import requests
 import time
+import pandas as pd
 
 
 ##############################################################################
@@ -27,17 +28,17 @@ PATH = 'data/all_draws.csv'
 ##############################################################################
 # CLASSES
 ##############################################################################
-class Draw:
+# class Draw:
     
-    numDraws = 0
+#     numDraws = 0
     
-    def __init__(self, program, num_inv, date, score):
-        self.program = program
-        self.num_inv = num_inv
-        self.date = date
-        self.score = score
+#     def __init__(self, program, num_inv, date, score):
+#         self.program = program
+#         self.num_inv = num_inv
+#         self.date = date
+#         self.score = score
         
-        Draw.numDraws += 1
+#         Draw.numDraws += 1
 
 
 ##############################################################################
@@ -65,15 +66,39 @@ def table_scraper(response):
     html_table = soup.find('table')
     table_rows = html_table.find_all('tr')
     
+    df = pd.DataFrame()
     
     for i, row in enumerate(table_rows):
         table_entries = row.find_all('td')
+        
         for i_, entry in enumerate(table_entries):
-            print(i, i_, entry.text)
-    
+            entry = entry.text
+            print(i, i_, entry)
+            
+            if i_ == 0:
+                df.at[i, 'draw_number'] = entry
+                
+            elif i_ == 1:
+                df[i, 'draw_date'] = entry
+            
+            elif i_ == 2:
+                df.at[i, 'program'] = entry
+            
+            elif i_ == 3:
+                df.at[i, 'number_invited'] = entry
+                
+            elif i_ == 4:
+                df.at[i, 'score'] = entry
+                
+            else:
+                continue
+            
+       
+        
         if i == 20:
             break
-        
+        print(df)
+        print(df.columns)
         
 
 

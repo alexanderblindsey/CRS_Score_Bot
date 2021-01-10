@@ -9,8 +9,9 @@ import mysql.connector
 import config
 
 
-config.gcp_server['database'] = 'crs_score_bot'
+config.gcp_server['database'] = 'bot_db'
 
 cnxn = mysql.connector.connect(**config.gcp_server)
+
 
 cursor = cnxn.cursor()
