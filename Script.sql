@@ -1,18 +1,14 @@
-SHOW databases;
-
-USE bot_db;
-
-CREATE TABLE draws
+CREATE TABLE bot_db.draws
 (
-	num_draw VARCHAR(10),
-	date_drw DATE,
-	program VARCHAR(30),
-	num_invitations INT,
+	draw_num INT,
+	draw_date VARCHAR(100),
+	program VARCHAR(100),
+	num_inv INT,
 	score INT
 );
 
-CREATE TABLE reddit
+CREATE TABLE bot_db.reddit
 (
 	comment_id VARCHAR(10),
 	replied_at DATETIME
-)
+);
