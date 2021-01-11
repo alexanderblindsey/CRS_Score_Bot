@@ -134,3 +134,8 @@ dmypy.json
 # config
 config.py
 
+# storing SSL client certificates
+ssl/
+
+# SSL client certificates
+.pem
