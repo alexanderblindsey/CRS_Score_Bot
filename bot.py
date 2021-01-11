@@ -24,7 +24,6 @@ import config
 PATH_DRAW = 'data/last_draw.csv'
 PATH_CACHE = 'data/cache.csv'
 MATCH_WORDS = ['!ping CRS']
-REPLY_TEST = 'Test Reply'
 
 ##############################################################################
 # FUNCTIONS
@@ -34,11 +33,11 @@ def authenticate():
     Authenticates account using account information from config.py file.
     """
     print('Authenticating...')
-    reddit = praw.Reddit(username=config.username,
-                         password=config.password,
-                         client_id=config.client_id,
-                         client_secret=config.client_secret,
-                         user_agent="cunstitution's CRS score bot v0.1")
+    reddit = praw.Reddit(username=config.reddit['username'],
+                         password=config.reddit['password'],
+                         client_id=config.reddit['client_id'],
+                         client_secret=config.reddit['client_secret'],
+                         user_agent=config.reddit['user_agent'])
     print('Authenticated as {}.\n'.format(reddit.user.me()) + 
           'Accessed: {}'.format(datetime
                                 .now(timezone.utc)
