@@ -14,7 +14,8 @@ from bs4 import BeautifulSoup
 import requests
 import time
 import pandas as pd
-
+import mysql.connector
+import config
 
 ##############################################################################
 # GLOBALS
@@ -22,7 +23,6 @@ import pandas as pd
 URL = ('https://www.canada.ca/en/immigration-refugees-citizenship/corporate/ma'
        'ndate/policies-operational-instructions-agreements/ministerial-instruc'
        'tions/express-entry-rounds.html#wb-auto-4')
-PATH = 'data/all_draws.csv'
 
 
 ##############################################################################
@@ -51,60 +51,117 @@ def get_response(url):
     print('Connecting...')
     response = requests.get(url).text
     print('Retrieved')
-    
+
     return response
 
 
-def table_scraper(response):
+def scrape(response):
     """
-    Gets table and adds each row.
+    Extracts data from the table on the IRCC website of all Express Entry
+    draws. Stores this data as a dataframe.
     """
     print('Parsing...')
     soup = BeautifulSoup(response, 'lxml')
-    
-    print('Found table')
     html_table = soup.find('table')
     table_rows = html_table.find_all('tr')
+    print('Found table')    
     
-    df = pd.DataFrame()
+    draw_df = pd.DataFrame(columns=['draw_num',
+                                    'draw_date',
+                                    'program',
+                                    'num_inv',
+                                    'score'])
     
-    for i, row in enumerate(table_rows):
+    print('Extracting info')
+    for num_row, row in enumerate(table_rows):
         table_entries = row.find_all('td')
+        draw_dict = {}
         
-        for i_, entry in enumerate(table_entries):
-            entry = entry.text
-            print(i, i_, entry)
+        for num_entry, entry in enumerate(table_entries):
+            entry = entry.text            
             
-            if i_ == 0:
-                df.at[i, 'draw_number'] = entry
+            if num_entry == 0:
+                draw_dict['draw_num'] = entry
                 
-            elif i_ == 1:
-                df[i, 'draw_date'] = entry
+            elif num_entry == 1:
+                draw_dict['draw_date'] = entry
             
-            elif i_ == 2:
-                df.at[i, 'program'] = entry
+            elif num_entry == 2:
+                draw_dict['program'] = entry
             
-            elif i_ == 3:
-                df.at[i, 'number_invited'] = entry
+            elif num_entry == 3:
+                draw_dict['num_inv'] = entry
                 
-            elif i_ == 4:
-                df.at[i, 'score'] = entry
+            elif num_entry == 4:
+                draw_dict['score'] = entry
                 
+            elif num_entry == 5: # num_entry 5 and 6 include redundant info
+                draw_df = draw_df.append(draw_dict, ignore_index=True)
+                draw_dict = {}
+            
             else:
                 continue
+   
+    print('Parsed - stored as df')
+    return draw_df
+        
+
+def populate_db(df):    
+    """
+    Uses dataframe containing data on Express Entry draws to populate the 
+    remote appropriate MySQL database table only if is empty.
+    """
+    config.gcp_server['database'] = 'bot_db'
+    
+    print('Establishing connection...')
+    conn = mysql.connector.connect(**config.gcp_server)
+    cursor = conn.cursor()
+    print('Connection established')
+    
+    print('Checking if data in table')
+    cursor.execute('SELECT EXISTS (SELECT 1 FROM draws);')
+    check_data = cursor.fetchall()   
+    if 1 in check_data[0]:
+        print('Data found')
+    
+    else:
+        print('No data found', '\nPopulating table...')        
+        for i in df.index:
+            current_draw_num = int(df.at[i, 'draw_num'])
+            current_draw_date = df.at[i, 'draw_date']
+            current_program =  df.at[i, 'program']
+            current_num_inv = int(df.at[i, 'num_inv'])
+            current_score = int(df.at[i, 'score'])
             
-       
+            to_insert = (current_draw_num, 
+                          current_draw_date,
+                          current_program,
+                          current_num_inv,
+                          current_score)
+            
+            query = ('INSERT INTO draws (draw_num, draw_date, program, num_inv'
+                      ', score) VALUES {}'.format(to_insert))
+
+            cursor.execute(query)
+            conn.commit()
+            
+        print('Table populated')
         
-        if i == 20:
-            break
-        print(df)
-        print(df.columns)
+    print('Closing connection')
+    conn.close()
+    print('Connection closed')
         
+        
+def update_db(df):
+    """
+    Updates database with new draws.
+    """
+    pass    
 
-
-
+    
 response = get_response(URL)
-table = table_scraper(response)
+table = scrape(response)
+populate_db(table)
     
 ##############################################################################
 # MAIN
