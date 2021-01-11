@@ -21,7 +21,7 @@ If a redditor comments "!CRS" in the subreddit, the CRS_Score_Bot replies with d
 ## Description
 
 The bot, which is hosted on Google Cloud using tmux to run continuously, scrapes this [IRCC website](https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/submit-profile/rounds-invitations.html) to collect data on the most recent
-express entry draw. The continuously scans r/CanadaImmigration comments and searches for "!CRS", at which point
+express entry draw. The continuously scans r/CanadaImmigration comments and searches for "!ping CRS", at which point
 it replies to the comment with this data.
 
 ## Feedback
