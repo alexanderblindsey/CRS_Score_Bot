@@ -24,7 +24,6 @@ import config
 PATH_DRAW = 'data/last_draw.csv'
 PATH_CACHE = 'data/cache.csv'
 MATCH_WORDS = ['!ping CRS']
-REPLY_TEST = 'Test Reply'
 
 ##############################################################################
 # FUNCTIONS
