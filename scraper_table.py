@@ -12,9 +12,9 @@ For SQLite db.
 ##############################################################################
 from bs4 import BeautifulSoup
 import requests
-import time
 import pandas as pd
 import mysql.connector
+from datetime import datetime, timezone
 import config
 
 ##############################################################################
@@ -28,17 +28,7 @@ URL = ('https://www.canada.ca/en/immigration-refugees-citizenship/corporate/ma'
 ##############################################################################
 # CLASSES
 ##############################################################################
-# class Draw:
-    
-#     numDraws = 0
-    
-#     def __init__(self, program, num_inv, date, score):
-#         self.program = program
-#         self.num_inv = num_inv
-#         self.date = date
-#         self.score = score
-        
-#         Draw.numDraws += 1
+
 
 
 ##############################################################################
@@ -98,7 +88,7 @@ def scrape(response):
             elif num_entry == 5: # num_entry 5 and 6 include redundant info
                 draw_df = draw_df.append(draw_dict, ignore_index=True)
                 draw_dict = {}
-            
+        
             else:
                 continue
    
@@ -119,28 +109,32 @@ def populate_db(df):
     print('Connection established')
     
     print('Checking if data in table')
-    cursor.execute('SELECT EXISTS (SELECT 1 FROM draws);')
+    cursor.execute('SELECT EXISTS (SELECT 1 FROM Draws);')
     check_data = cursor.fetchall()   
     if 1 in check_data[0]:
         print('Data found')
     
     else:
         print('No data found', '\nPopulating table...')        
+        df['created_at'] = ''
+        
         for i in df.index:
             current_draw_num = int(df.at[i, 'draw_num'])
             current_draw_date = df.at[i, 'draw_date']
             current_program =  df.at[i, 'program']
             current_num_inv = int(df.at[i, 'num_inv'])
             current_score = int(df.at[i, 'score'])
+            current_created_at = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             
             to_insert = (current_draw_num, 
                           current_draw_date,
                           current_program,
                           current_num_inv,
-                          current_score)
+                          current_score,
+                          current_created_at)
             
-            query = ('INSERT INTO draws (draw_num, draw_date, program, num_inv'
-                      ', score) VALUES {}'.format(to_insert))
+            query = ('INSERT INTO Draws (draw_num, draw_date, program, num_inv'
+                      ', score, created_at) VALUES {}'.format(to_insert))
 
             cursor.execute(query)
             conn.commit()
@@ -156,7 +150,21 @@ def update_db(df):
     """
     Updates database with new draws.
     """
-    pass    
+    config.gcp_server['database'] = 'bot_db'
+    
+    print('Establishing connection...')
+    conn = mysql.connector.connect(**config.gcp_server)
+    cursor = conn.cursor()
+    print('Connection established')
+    
+    print('Checking if draw in db...')
+    query = ('SELECT draw_num FROM Draws WHERE draw_num = (SELECT MAX (draw_num) FROM Draws)')
+    
+    last_draw_num = cursor.execute(query)
+    
+    
+    
+    
 
     
 response = get_response(URL)
